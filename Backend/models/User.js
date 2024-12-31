@@ -1,3 +1,9 @@
+/**
+ * User model schema definition.
+ * This schema defines the structure of the User document in the MongoDB database.
+ * It includes fields for username, password, addresses, and recent searches.
+ */
+
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({

@@ -149,10 +149,10 @@ const fetchAddresses = async () => {
 - `REACT_APP_MAPS_API_KEY`: Maps API Key (if required)
 
 ### API Endpoints
-- `/api/users/signin`: User authentication
-- `/api/users/signup`: User registration
-- `/api/users/addresses`: Address management
-- `/api/users/recent`: Recent searches
+- `/signin`: User authentication
+- `/signup`: User registration
+- `/addresses`: Address management
+- `/location`: Recent searches
 
 ## Troubleshooting
 - Ensure the backend server is running and accessible

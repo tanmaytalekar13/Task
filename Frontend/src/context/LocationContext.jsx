@@ -12,8 +12,6 @@ const LocationContext = ({ children }) => {
   });
   const [recentSearches, setRecentSearches] = useState([]); // State for storing recent searches
 
-  console.log({ address, recentSearches });
-
   const updateAddress = (newAddress) => {
     setAddress((prevAddress) => ({
       ...prevAddress,

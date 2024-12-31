@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { FaHome, FaSuitcase, FaUserFriends, FaMapMarkerAlt } from "react-icons/fa";
 import { LocationDataContext } from "../context/LocationContext";
 import axios from 'axios'; // Import axios for making HTTP requests
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 
 const DeliveryAddress = () => {
   const { address, updateAddress } = useContext(LocationDataContext);
@@ -11,6 +12,8 @@ const DeliveryAddress = () => {
     category: address.category || "Home", // Default to "Home"
     fullAddress: address.fullAddress || "", // This will store the full address from the map
   });
+
+  const navigate = useNavigate(); // Initialize the navigate function
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -58,6 +61,11 @@ const DeliveryAddress = () => {
         alert('Error: Unable to connect to the server');
       }
     }
+  };
+
+  const handleAddressManagerClick = () => {
+    // Navigate to the location page
+    navigate("/location");
   };
 
   return (
@@ -147,6 +155,14 @@ const DeliveryAddress = () => {
         className="w-full bg-red-500 text-white py-2 rounded-lg hover:bg-red-600"
       >
         Save Address
+      </button>
+
+      {/* Address Manager Button */}
+      <button
+        onClick={handleAddressManagerClick}
+        className="w-full bg-gray-300 text-black py-2 rounded-lg mt-4 hover:bg-gray-400"
+      >
+        Address Manager
       </button>
     </div>
   );
