@@ -51,7 +51,7 @@ const SignIn = () => {
         </form>
         <p className="text-center text-sm text-gray-500 mt-4">
           Don't have an account?{' '}
-          <a href="/signup" className="text-red-600 hover:underline">
+          <a href="/" className="text-red-600 hover:underline">
             Sign up
           </a>
         </p>

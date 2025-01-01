@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react"; // Added useContext import
+import React, { useState, useEffect, useContext } from "react";
 import { FiSearch, FiMapPin, FiHome, FiBriefcase, FiUsers } from "react-icons/fi";
 import axios from "axios";
 import { LocationDataContext } from '../context/LocationContext';
@@ -6,11 +6,11 @@ import { LocationDataContext } from '../context/LocationContext';
 const LocationPage = () => {
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState(""); // State for the search input
-  const [suggestions, setSuggestions] = useState([]); // State for location suggestions
-  const [currentLocationAddress, setCurrentLocationAddress] = useState(""); // State for current location address
-  const [selectedAddress, setSelectedAddress] = useState(""); // State for the selected address
-  const { recentSearches, setRecentSearches } = useContext(LocationDataContext); // Using useContext to access LocationDataContext
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const [currentLocationAddress, setCurrentLocationAddress] = useState("");
+  const [selectedAddress, setSelectedAddress] = useState("");
+  const { recentSearches, setRecentSearches } = useContext(LocationDataContext);
 
   useEffect(() => {
     const fetchAddresses = async () => {
@@ -19,15 +19,13 @@ const LocationPage = () => {
         if (!token) {
           throw new Error("No token found");
         }
-        console.log("token: " + token);
         const response = await axios.get("http://localhost:8000/api/users/addresses", {
           headers: {
-            Authorization: `Bearer ${token}`, // Correctly formatted
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         });
-        console.log("Addresses fetched:", response.data);
-        setAddresses(response.data); // Assuming the response contains the addresses directly
+        setAddresses(response.data);
       } catch (error) {
         console.error("Error fetching addresses:", error);
       } finally {
@@ -77,9 +75,8 @@ const LocationPage = () => {
 
   const handleSuggestionClick = (suggestion) => {
     setSearchQuery(suggestion.display_name);
-    setSelectedAddress(suggestion.display_name); // Set the selected address
+    setSelectedAddress(suggestion.display_name);
     setSuggestions([]);
-    // Add the selected suggestion to recent searches
     if (!recentSearches.some(search => search.fullAddress === suggestion.display_name)) {
       setRecentSearches([{ fullAddress: suggestion.display_name, category: "Search", _id: Date.now() }, ...recentSearches]);
     }
@@ -128,7 +125,7 @@ const LocationPage = () => {
             placeholder="Search your area/pincode/apartment"
             className="flex-1 p-3 text-gray-700 focus:outline-none rounded-r-lg"
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)} // Update searchQuery state
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
           <button
             className="px-4 py-2 bg-red-600 text-white rounded-lg ml-2"
@@ -185,17 +182,22 @@ const LocationPage = () => {
             <div>Loading...</div>
           ) : (
             addresses.map((address, index) => {
-              const { area, district, state, pincode, country } = parseFullAddress(address.fullAddress);
+              const { house, apartment, category, fullAddress } = address;
+              const { area, district, state, pincode, country } = parseFullAddress(fullAddress);
 
               return (
-                <div key={index} className="flex items-center bg-white p-4 rounded-lg shadow-md">
-                  {address.category === "Home" && <FiHome className="text-black text-2xl mr-4" />}
-                  {address.category === "Office" && <FiBriefcase className="text-black text-2xl mr-4" />}
-                  {address.category === "Friends & Family" && <FiUsers className="text-black text-2xl mr-4" />}
-                  <div>
-                    <h3 className="font-medium">{address.category}</h3>
-                    <p className="text-sm text-gray-500">{area}, {district}, {state}, {pincode}, {country}</p>
+                <div key={index} className="flex flex-col bg-white p-4 rounded-lg shadow-md">
+                  <div className="flex items-center mb-2">
+                    {category === "Home" && <FiHome className="text-black text-2xl mr-4" />}
+                    {category === "Office" && <FiBriefcase className="text-black text-2xl mr-4" />}
+                    {category === "Friends & Family" && <FiUsers className="text-black text-2xl mr-4" />}
+                    <h3 className="font-medium">{category}</h3>
                   </div>
+                  <p className="text-sm text-gray-500">House: {house}</p>
+                  <p className="text-sm text-gray-500">Apartment: {apartment}</p>
+                  <p className="text-sm text-gray-500">
+                    {area}, {district}, {state}, {pincode}, {country}
+                  </p>
                 </div>
               );
             })
@@ -211,17 +213,20 @@ const LocationPage = () => {
             <div>No recent searches</div>
           ) : (
             recentSearches.map((search, index) => {
-              const { area, district, state, pincode, country } = parseFullAddress(search.fullAddress);
+              const { house, apartment, category, fullAddress } = search;
+              const { area, district, state, pincode, country } = parseFullAddress(fullAddress);
 
               return (
-                <div key={index} className="flex items-center bg-white p-4 rounded-lg shadow-md">
-                  <FiMapPin className="text-red-600 text-2xl mr-4" />
-                  <div>
-                    <h3 className="font-medium">{search.fullAddress}</h3>
-                    <p className="text-sm text-gray-500">
-                      {area}, {district}, {state}, {pincode}, {country}
-                    </p>
+                <div key={index} className="flex flex-col bg-white p-4 rounded-lg shadow-md">
+                  <div className="flex items-center mb-2">
+                    <FiMapPin className="text-red-600 text-2xl mr-4" />
+                    <h3 className="font-medium">{category}</h3>
                   </div>
+                  <p className="text-sm text-gray-500">House: {house}</p>
+                  <p className="text-sm text-gray-500">Apartment: {apartment}</p>
+                  <p className="text-sm text-gray-500">
+                    {area}, {district}, {state}, {pincode}, {country}
+                  </p>
                 </div>
               );
             })

@@ -23,7 +23,7 @@ const Home = () => {
           const { latitude, longitude } = position.coords;
           setLocation({ lat: latitude, lng: longitude });
 
-          const apiKey = '1c7e4de333314d59a7e297ffa84de7d5';
+          const apiKey =import.meta.env.VITE_API_URL;
           const url = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}`;
 
           try {

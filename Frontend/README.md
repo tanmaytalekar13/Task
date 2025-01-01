@@ -1,164 +1,123 @@
-# Location-Based Frontend Application
+# Frontend Application Endpoints Documentation
 
-## Project Overview
-A React.js-based frontend application for location-based services, featuring user authentication, address management, and interactive mapping capabilities. The application integrates with a backend API for data persistence and user management.
+## Endpoints
 
-## Features
-- User Authentication (Sign Up/Sign In)
-- Real-time Location Tracking
-- Interactive Map Integration using Leaflet
-- Address Management (Add, View, Categories)
-- Location Search with Suggestions
-- Recent Location History
-- Protected Routes for Authenticated Users
-
-## Tech Stack
-- React.js
-- React Router v6
-- Leaflet for Maps
-- Axios for API Requests
-- TailwindCSS for Styling
-- Context API for State Management
-
-## Prerequisites
-- Node.js (v14 or higher)
-- npm or yarn
-- Backend Server Running (See Backend Documentation)
-
-## Installation
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd frontend
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Create `.env` file:
-```env
-REACT_APP_API_URL=http://localhost:8000
-```
-
-4. Start the development server:
-```bash
-npm start
-```
-
-## Project Structure
-```
-src/
-├── components/
-├── context/
-│   └── LocationContext.jsx    # Location state management
-├── pages/
-│   ├── Home.jsx              # Main dashboard
-│   ├── SignIn.jsx            # User authentication
-│   ├── SignUp.jsx            # User registration
-│   ├── LocationPage.jsx      # Address management
-│   ├── MapPage.jsx           # Interactive map
-│   └── DeliveryAddress.jsx   # Address form
-└── App.jsx                   # Route configuration
-```
-
-## Usage Examples
-
-### Authentication
-```jsx
-// Sign In Example
-const handleSignIn = async (e) => {
-  e.preventDefault();
-  try {
-    const response = await axios.post('/api/users/signin', { username, password });
-    localStorage.setItem('token', response.data.token);
-    navigate('/home');
-  } catch (error) {
-    alert('Error signing in');
+### 1. `/` - Sign Up
+- **Description**: Endpoint for user registration.
+- **Method**: POST
+- **Status Codes**:
+  - `200 OK`: Successful sign-up.
+  - `400 Bad Request`: Invalid input data.
+  - `500 Internal Server Error`: Server error.
+- **Required Data**:
+  ```json
+  {
+    "username": "string",
+    "password": "string"
   }
-};
-```
+  ```
+- **Example**:
+  ```bash
+  curl -X POST http://localhost:8000/api/users/signup -H "Content-Type: application/json" -d '{"username": "testuser", "password": "password123"}'
+  ```
 
-### Location Tracking
-```jsx
-// Current Location Example
-const getCurrentLocation = () => {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setLocation({ lat: latitude, lng: longitude });
-      },
-      (error) => alert('Error getting location: ' + error.message)
-    );
+### 2. `/signin` - Sign In
+- **Description**: Endpoint for user login.
+- **Method**: POST
+- **Status Codes**:
+  - `200 OK`: Successful sign-in.
+  - `401 Unauthorized`: Invalid credentials.
+  - `500 Internal Server Error`: Server error.
+- **Required Data**:
+  ```json
+  {
+    "username": "string",
+    "password": "string"
   }
-};
-```
+  ```
+- **Example**:
+  ```bash
+  curl -X POST http://localhost:8000/api/users/signin -H "Content-Type: application/json" -d '{"username": "testuser", "password": "password123"}'
+  ```
 
-### Map Integration
-```jsx
-// Map Component Example
-<MapContainer center={location} zoom={15}>
-  <TileLayer
-    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-    attribution='&copy; OpenStreetMap contributors'
-  />
-  <Marker position={location}>
-    <Popup>Your Location</Popup>
-  </Marker>
-</MapContainer>
-```
+### 3. `/home` - Home
+- **Description**: Protected endpoint for the home page.
+- **Method**: GET
+- **Status Codes**:
+  - `200 OK`: Successful access.
+  - `401 Unauthorized`: User not authenticated.
+- **Required Data**: None (Token required in localStorage).
+- **Example**:
+  ```bash
+  curl -X GET http://localhost:8000/api/home -H "Authorization: Bearer <token>"
+  ```
 
-## Protected Routes
-```jsx
-// Protected Route Example
-const PrivateRoute = ({ element }) => {
-  const token = localStorage.getItem('token');
-  return token ? element : <Navigate to="/signin" />;
-};
-```
+### 4. `/location` - Location
+- **Description**: Endpoint for managing user locations.
+- **Method**: GET
+- **Status Codes**:
+  - `200 OK`: Successful access.
+  - `401 Unauthorized`: User not authenticated.
+- **Required Data**: None (Token required in localStorage).
+- **Example**:
+  ```bash
+  curl -X GET http://localhost:8000/api/location -H "Authorization: Bearer <token>"
+  ```
 
-## API Integration
-```jsx
-// Address Management Example
-const fetchAddresses = async () => {
-  const token = localStorage.getItem('token');
-  const response = await axios.get('/api/users/addresses', {
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-  });
-  setAddresses(response.data);
-};
-```
+### 5. `/address` - Delivery Address
+- **Description**: Endpoint for setting delivery address.
+- **Method**: POST
+- **Status Codes**:
+  - `200 OK`: Address saved successfully.
+  - `400 Bad Request`: Invalid input data.
+  - `401 Unauthorized`: User not authenticated.
+  - `500 Internal Server Error`: Server error.
+- **Required Data**:
+  ```json
+  {
+    "house": "string",
+    "apartment": "string",
+    "category": "string",
+    "fullAddress": "string"
+  }
+  ```
+- **Example**:
+  ```bash
+  curl -X POST http://localhost:8000/api/users/address -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"house": "123", "apartment": "ABC Apartments", "category": "Home", "fullAddress": "123, ABC Apartments, XYZ Street, City, State, Country"}'
+  ```
 
-## Contributing
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### 6. `/map` - Map
+- **Description**: Protected endpoint for the map page.
+- **Method**: GET
+- **Status Codes**:
+  - `200 OK`: Successful access.
+  - `401 Unauthorized`: User not authenticated.
+- **Required Data**: None (Token required in localStorage).
+- **Example**:
+  ```bash
+  curl -X GET http://localhost:8000/api/map -H "Authorization: Bearer <token>"
+  ```
 
-## Additional Configuration
+## How to Use
 
-### Environment Variables
-- `REACT_APP_API_URL`: Backend API URL
-- `REACT_APP_MAPS_API_KEY`: Maps API Key (if required)
+1. **Sign Up**: Register a new user by sending a POST request to `/` with the required data.
+2. **Sign In**: Log in an existing user by sending a POST request to `/signin` with the required data.
+3. **Home**: Access the home page by navigating to `/home` (requires authentication).
+4. **Location**: Manage user locations by navigating to `/location` (requires authentication).
+5. **Delivery Address**: Set a delivery address by sending a POST request to `/address` with the required data (requires authentication).
+6. **Map**: Access the map page by navigating to `/map` (requires authentication).
 
-### API Endpoints
-- `/signin`: User authentication
-- `/signup`: User registration
-- `/addresses`: Address management
-- `/location`: Recent searches
+## Authentication
 
-## Troubleshooting
-- Ensure the backend server is running and accessible
-- Check browser console for any errors
-- Verify environment variables are set correctly
-- Confirm authentication token is present for protected routes
+- Authentication is handled using tokens stored in localStorage.
+- Ensure the token is present in localStorage for protected routes.
 
-## License
-This project is licensed under the MIT License - see the LICENSE file for details
+## Error Handling
+
+- Proper error messages and status codes are returned for each endpoint.
+- Handle errors gracefully in the frontend application.
+
+## Notes
+
+- Ensure the backend server is running and accessible at `http://localhost:8000`.
+- Adjust the API endpoints and URLs as needed based on your backend configuration.
